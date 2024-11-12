@@ -6,7 +6,7 @@ public class PlayerMovement : MonoBehaviour
     public float jumpForce = 10f;
     public Transform groundCheck;
     public LayerMask groundLayer;
-    public GameManager scoreManager;
+    public GameManager gameManager;
 
     private Rigidbody2D rb;
     private bool isGrounded;
@@ -46,13 +46,18 @@ public class PlayerMovement : MonoBehaviour
     {
         if (other.gameObject.CompareTag("Coin"))
         {
-            scoreManager.AddScore(200);
+            gameManager.AddScore(200);
             Destroy(other.gameObject);
         }
         else if (other.gameObject.CompareTag("Trap"))
         {
-            scoreManager.removePoints(50);
+            gameManager.removePoints(50);
            
+        }
+        else if (other.gameObject.CompareTag("key"))
+        {
+            gameManager.AddKey(1);
+            Destroy(other.gameObject);
         }
     }
 }
