@@ -16,7 +16,7 @@ public class GameManager : MonoBehaviour
     void Start()
     {
         scoreText.text = "Coins: 0";
-        keyText.text = "Keys: 10";
+        keyText.text = "Keys: 5";
         rb = GetComponent<Rigidbody2D>();
     }
 

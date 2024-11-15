@@ -46,7 +46,7 @@ public class PlayerMovement : MonoBehaviour
     {
         if (other.gameObject.CompareTag("Coin"))
         {
-            gameManager.AddScore(200);
+            gameManager.AddScore(5);
             Destroy(other.gameObject);
         }
         else if (other.gameObject.CompareTag("Trap"))
