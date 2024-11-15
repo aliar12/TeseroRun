@@ -15,8 +15,8 @@ public class GameManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        scoreText.text = "Score: 0";
-        keyText.text = "Remaining Keys: 10";
+        scoreText.text = "Coins: 0";
+        keyText.text = "Keys: 10";
         rb = GetComponent<Rigidbody2D>();
     }
 
@@ -32,7 +32,7 @@ public class GameManager : MonoBehaviour
     }
     void UpdateText()
     {
-        scoreText.text = "Score: " + score;
+        scoreText.text = "Coins: " + score;
         keyText.text = "Remaining Keys: " + keyScore;
 
     }

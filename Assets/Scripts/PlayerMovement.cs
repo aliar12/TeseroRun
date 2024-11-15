@@ -54,7 +54,7 @@ public class PlayerMovement : MonoBehaviour
             gameManager.removePoints(50);
            
         }
-        else if (other.gameObject.CompareTag("key"))
+        else if (other.gameObject.CompareTag("Key"))
         {
             gameManager.AddKey(1);
             Destroy(other.gameObject);
