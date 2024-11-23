@@ -1,86 +1,153 @@
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement; // Include for scene management
 
 public class PlayerMovement : MonoBehaviour
 {
-    public float moveSpeed = 4f;
-    public float runSpeed = 6f;  // Speed while running
+    public float moveSpeed = 5f;
+    public float runSpeed = 8f;
     public float jumpForce = 10f;
-    public Transform groundCheck;
-    public LayerMask groundLayer;
-    public GameManager gameManager;
-    private Animator animator;
-
+    public float attackDuration = 0.5f;
+    public GameObject swordSlashPrefab;
+    public GameObject slash;
+    private bool isJumping = false;
+    private bool isAttacking = false;
     private Rigidbody2D rb;
-    private bool isGrounded;
-    private int jumpCount; 
-    private float currentMoveSpeed;
+    private Animator animator;
+    private float moveInput;
+    private float lastDirection = 1.0f;
+    public Vector3 slashOffset;
+    private int jumpCount = 0; // Counter for double jump
+    public GameManager gameManager;
+    public float fallThreshold = -10f; // Y-coordinate threshold for falling off the map
 
-    void Start()
+    private void Start()
     {
-        animator = GetComponent<Animator>();
         rb = GetComponent<Rigidbody2D>();
-        jumpCount = 0;  
-        currentMoveSpeed = moveSpeed;  // Initialize with normal move speed
+        animator = GetComponent<Animator>();
     }
 
-    void Update()
+    private void Update()
     {
-        // Check if the player is grounded
-        isGrounded = Physics2D.OverlapCircle(groundCheck.position, 0.1f, groundLayer);
+        HandleMovement();
+        HandleJump();
+        HandleAttack();
+        UpdateAnimator();
+        CheckFallOffMap(); // Check if the player has fallen off the map
+    }
 
-        // If grounded, reset jump count and trigger the "isJumping" animation to false
-        if (isGrounded)
+    private void HandleMovement()
+    {
+        moveInput = Input.GetAxisRaw("Horizontal"); // -1 for left, 1 for right, 0 for idle
+
+        if (!isAttacking)
         {
-            jumpCount = 0;  // Reset jump count when grounded
-            animator.SetBool("isJumping", false);  // Set "isJumping" to false when grounded
+            // Set horizontal velocity
+            float currentSpeed = Input.GetKey(KeyCode.LeftShift) ? runSpeed : moveSpeed;
+            rb.velocity = new Vector2(moveInput * currentSpeed, rb.velocity.y);
+
+            if (moveInput != 0)
+            {
+                lastDirection = moveInput;
+                FlipSprite(lastDirection, GetComponent<SpriteRenderer>());
+            }
+            else
+            {
+                // Stop horizontal movement when no key is pressed
+                rb.velocity = new Vector2(0, rb.velocity.y);
+            }
+        }
+    }
+
+    private void FlipSprite(float direction, SpriteRenderer spriteRenderer)
+    {
+        if (spriteRenderer == null)
+            return;
+        // Flip the character sprite by modifying the flipX property of the SpriteRenderer
+        if (direction > 0 && spriteRenderer.flipX)
+        {
+            // Flip the sprite to face right
+            spriteRenderer.flipX = false;
+        }
+        else if (direction < 0 && !spriteRenderer.flipX)
+        {
+            // Flip the sprite to face left
+            spriteRenderer.flipX = true;
+        }
+    }
+
+    private void HandleJump()
+    {
+        if (Input.GetKeyDown(KeyCode.W) && jumpCount < 2)
+        {
+            rb.velocity = new Vector2(rb.velocity.x, jumpForce);
+            jumpCount++;
+            isJumping = true;
         }
 
-        // Get horizontal input (A/D or arrow keys)
-        float moveInput = Input.GetAxisRaw("Horizontal");
-
-        // Set the player's velocity
-        rb.velocity = new Vector2(moveInput * currentMoveSpeed, rb.velocity.y);
-        if (moveInput == 0.0f)
+        // Reset jump count when grounded
+        if (rb.velocity.y == 0)
         {
-            animator.SetFloat("CharacterSpeed", 0.0f);
+            isJumping = false;
+            jumpCount = 0;
         }
+    }
 
-        // Handle running animation and speed change when Shift is pressed
-        else if (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift))
+    private void HandleAttack()
+    {
+        if (Input.GetKeyDown(KeyCode.Space) && !isAttacking)
         {
-            currentMoveSpeed = runSpeed;  // Set speed to run speed
-            animator.SetFloat("CharacterSpeed", 6);
+            StartCoroutine(AttackCoroutine());
+        }
+    }
+
+    public void SpawnSlash()
+    {
+        slash = Instantiate(swordSlashPrefab, transform.position + new Vector3(lastDirection * slashOffset.x, slashOffset.y, 0.0f), Quaternion.identity);
+        FlipSprite(lastDirection, slash.GetComponent<SpriteRenderer>());
+    }
+
+    public void UnspawnSlash()
+    {
+        Destroy(slash, 0.5f);
+    }
+
+    private System.Collections.IEnumerator AttackCoroutine()
+    {
+        isAttacking = true;
+        animator.SetTrigger("doAttack");
+        yield return new WaitForSeconds(attackDuration);
+        isAttacking = false;
+    }
+
+    private void UpdateAnimator()
+    {
+        // Set CharacterSpeed based on movement input
+        if (moveInput == 0)
+        {
+            animator.SetFloat("CharacterSpeed", 1); // Idle
+        }
+        else if (Input.GetKey(KeyCode.LeftShift))
+        {
+            animator.SetFloat("CharacterSpeed", 6); // Running
         }
         else
         {
-            currentMoveSpeed = moveSpeed;  // Set speed back to normal
-            animator.SetFloat("CharacterSpeed", 4);
+            animator.SetFloat("CharacterSpeed", 4); // Walking
         }
 
-        // Handle character flip based on movement direction
-        if (moveInput > 0) // Moving right
-        {
-            transform.localScale = new Vector3(1, 1, 1);  // Facing right
-        }
-        else if (moveInput < 0) // Moving left
-        {
-            transform.localScale = new Vector3(-1, 1, 1);  // Facing left
-        }
-
-        // Handle jumping (W key)
-        if (Input.GetKeyDown(KeyCode.W) && jumpCount < 1) // Single jump, if not already in the air
-        {
-            animator.SetBool("isJumping", true);  // Trigger jump animation
-            rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);  // Apply jump force
-            jumpCount++;  // Increment jump count
-        }
-        // You can optionally check if the player has fallen below the ground
-        /*else if (rb.velocity.y < 0)
-        {
-            animator.SetBool("isJumping", false);  // Set "isJumping" to false when falling
-        }*/
+        // Set jump state
+        animator.SetBool("isJumping", isJumping);
     }
 
+    private void CheckFallOffMap()
+    {
+        if (transform.position.y < fallThreshold)
+        {
+            SceneManager.LoadScene(SceneManager.GetActiveScene().name); // Reload current scene
+        }
+    }
 
     void OnCollisionEnter2D(Collision2D other)
     {
