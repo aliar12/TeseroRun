@@ -9,15 +9,15 @@ public class PlayerMovement : MonoBehaviour
     public float runSpeed = 8f;
     public float jumpForce = 10f;
     public float attackDuration = 0.5f;
-    public GameObject swordSlashPrefab;
+    public GameObject swordSlashPrefab; // Slash prefab reference
     public GameObject slash;
     private bool isJumping = false;
     private bool isAttacking = false;
     private Rigidbody2D rb;
     private Animator animator;
     private float moveInput;
-    private float lastDirection = 1.0f;
-    public Vector3 slashOffset;
+    private float lastDirection = 1.0f; // Direction player is facing
+    public Vector3 slashOffset; // Offset for spawning slash
     private int jumpCount = 0; // Counter for double jump
     public GameManager gameManager;
     public float fallThreshold = -10f; // Y-coordinate threshold for falling off the map
@@ -64,17 +64,9 @@ public class PlayerMovement : MonoBehaviour
     {
         if (spriteRenderer == null)
             return;
+
         // Flip the character sprite by modifying the flipX property of the SpriteRenderer
-        if (direction > 0 && spriteRenderer.flipX)
-        {
-            // Flip the sprite to face right
-            spriteRenderer.flipX = false;
-        }
-        else if (direction < 0 && !spriteRenderer.flipX)
-        {
-            // Flip the sprite to face left
-            spriteRenderer.flipX = true;
-        }
+        spriteRenderer.flipX = direction < 0;
     }
 
     private void HandleJump()
@@ -102,28 +94,35 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    public void SpawnSlash()
-    {
-        slash = Instantiate(swordSlashPrefab, transform.position + new Vector3(lastDirection * slashOffset.x, slashOffset.y, 0.0f), Quaternion.identity);
-        FlipSprite(lastDirection, slash.GetComponent<SpriteRenderer>());
-    }
-
-    public void UnspawnSlash()
-    {
-        Destroy(slash, 0.5f);
-    }
-
     private System.Collections.IEnumerator AttackCoroutine()
     {
         isAttacking = true;
-        animator.SetTrigger("doAttack");
-        yield return new WaitForSeconds(attackDuration);
+        animator.SetTrigger("doAttack"); // Trigger the attack animation
+        SpawnSlash(); // Spawn the slash attack
+        yield return new WaitForSeconds(attackDuration); // Wait for the attack duration
         isAttacking = false;
     }
 
+    private void SpawnSlash()
+    {
+        Debug.Log("Spawning slash!");
+
+        Vector3 spawnPosition = transform.position + new Vector3(lastDirection * slashOffset.x, slashOffset.y, 0.0f);
+        slash = Instantiate(swordSlashPrefab, spawnPosition, Quaternion.identity);
+
+        SpriteRenderer slashRenderer = slash.GetComponent<SpriteRenderer>();
+        if (slashRenderer != null)
+        {
+            slashRenderer.flipX = lastDirection < 0;
+        }
+
+        Debug.Log("Slash spawned at position: " + spawnPosition);
+    }
+
+
     private void UpdateAnimator()
     {
-        // Set CharacterSpeed based on movement input
+        // Update animator parameters
         if (moveInput == 0)
         {
             animator.SetFloat("CharacterSpeed", 1); // Idle
@@ -137,8 +136,7 @@ public class PlayerMovement : MonoBehaviour
             animator.SetFloat("CharacterSpeed", 4); // Walking
         }
 
-        // Set jump state
-        animator.SetBool("isJumping", isJumping);
+        animator.SetBool("isJumping", isJumping); // Set jumping state
     }
 
     private void CheckFallOffMap()
@@ -149,21 +147,30 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    void OnCollisionEnter2D(Collision2D other)
+    private void OnCollisionEnter2D(Collision2D other)
     {
         if (other.gameObject.CompareTag("Coin"))
         {
-            gameManager.AddScore(5);  // Add score when colliding with Coin
-            Destroy(other.gameObject);  // Destroy coin
+            gameManager.AddScore(5); // Add score when colliding with Coin
+            Destroy(other.gameObject); // Destroy the coin
         }
         else if (other.gameObject.CompareTag("Trap"))
         {
-            gameManager.removePoints(50);  // Remove points on trap collision
+            gameManager.removePoints(50); // Remove points on trap collision
         }
         else if (other.gameObject.CompareTag("Key"))
         {
-            gameManager.AddKey(1);  // Add key when colliding with Key
-            Destroy(other.gameObject);  // Destroy key
+            gameManager.AddKey(1); // Add key when colliding with Key
+            Destroy(other.gameObject); // Destroy the key
+        }
+    }
+
+    public void UnspawnSlash()
+    {
+        if (slash != null)
+        {
+            Destroy(slash);
+            slash = null; // Reset the reference
         }
     }
 }

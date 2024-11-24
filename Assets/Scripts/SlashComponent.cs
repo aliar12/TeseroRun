@@ -1,33 +1,48 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class SlashComponent : MonoBehaviour
 {
-    SpriteRenderer spriteRenderer;
-   
-    // Start is called before the first frame update
-    void Start()
+    private SpriteRenderer spriteRenderer;
+    public int damage = 10; // Damage dealt by the slash
+    public float moveSpeed = 5f; // Speed at which the slash moves
+    public float lifetime = 0.5f; // How long the slash exists before disappearing
+
+    private void Start()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
+        Destroy(gameObject, lifetime); // Automatically destroy the slash after its lifetime
     }
 
-    // Update is called once per frame
-    void Update()
+    private void Update()
     {
-        Vector3 direction = new Vector3(1,0,0);
-        if (spriteRenderer.flipX)
+        // Move the slash in the correct direction
+        Vector3 direction = new Vector3(1, 0, 0);
+        if (spriteRenderer.flipX) // Flip direction if sprite is flipped
         {
             direction = direction * -1.0f;
         }
-        transform.position +=  direction * Time.deltaTime;
-    } 
-     void OnCollisionEnter2D(Collision2D other)
-    {
-        if (other.gameObject.CompareTag("Enemy"))
-        {
-            Destroy(other.gameObject); 
-        }
-
+        transform.position += direction * moveSpeed * Time.deltaTime;
     }
+
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        Debug.Log($"Slash hit: {other.gameObject.name}");
+
+        if (other.CompareTag("Enemy"))
+        {
+            Debug.Log("Enemy hit by slash!");
+
+            SlimeMonster enemy = other.GetComponent<SlimeMonster>();
+            if (enemy != null)
+            {
+                Debug.Log($"Applying damage: {damage}");
+                enemy.TakeDamage(damage);
+            }
+            else
+            {
+                Debug.Log("No SlimeMonster script found on enemy!");
+            }
+        }
+    }
+
 }
