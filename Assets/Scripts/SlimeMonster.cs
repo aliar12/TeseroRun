@@ -11,7 +11,8 @@ public class SlimeMonster : MonoBehaviour
     private Image healthBarFill;
 
     public float speed = 2f;
-    public float followDistance = 5f;
+    public float followDistance = 8f;
+    public float stopDistance = 3f; // Distance at which the slime stops moving to avoid pushing the player
     private Transform player;
     private Rigidbody2D rb;
     private Animator animator;
@@ -60,6 +61,15 @@ public class SlimeMonster : MonoBehaviour
         // Check if "Hit" animation is playing
         if (animator != null && animator.GetCurrentAnimatorStateInfo(0).IsName("SlimeHit")) return;
 
+        float distanceToPlayer = Vector2.Distance(transform.position, player.position);
+
+        // Stop moving if within the stop distance
+        if (distanceToPlayer <= stopDistance)
+        {
+            StopMoving();
+            return;
+        }
+
         // Enable running animation only if moving
         if (animator != null)
         {
@@ -105,7 +115,6 @@ public class SlimeMonster : MonoBehaviour
         }
     }
 
-
     private void UpdateHealthBar()
     {
         if (healthBarFill != null)
@@ -136,5 +145,4 @@ public class SlimeMonster : MonoBehaviour
         Destroy(healthBar);
         Destroy(gameObject, 1.5f); // Destroy after death animation
     }
-
 }
