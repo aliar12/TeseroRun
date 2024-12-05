@@ -157,11 +157,12 @@ MonoBehaviour:
   moveSpeed: 5
   runSpeed: 10
   jumpForce: 5
-  groundCheck: {fileID: 4244865778356649316}
-  groundLayer:
-    serializedVersion: 2
-    m_Bits: 8
+  attackDuration: 0.5
+  swordSlashPrefab: {fileID: 0}
+  slash: {fileID: 0}
+  slashOffset: {x: 0, y: 0, z: 0}
   gameManager: {fileID: 0}
+  fallThreshold: -10
 --- !u!50 &4724074729671191722
 Rigidbody2D:
   serializedVersion: 4
@@ -237,5 +238,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   knife: {fileID: 7750370467848080202, guid: 9e33cf8bf2fa071409a531b785bb9709, type: 3}
-  knifeDamage: 20
+  knifeDamage: 50
   swingDuration: 0.2

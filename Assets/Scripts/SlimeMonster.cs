@@ -21,6 +21,8 @@ public class SlimeMonster : MonoBehaviour
 
     void Start()
     {
+        Debug.Log("Slime has started in Level1");
+
         currentHealth = maxHealth;
         healthBar = Instantiate(healthBarPrefab);
         healthBarFill = healthBar.transform.Find("Background/Fill").GetComponent<Image>();
@@ -39,6 +41,8 @@ public class SlimeMonster : MonoBehaviour
     {
         if (isDead) return;
 
+        Debug.Log("Slime is updating...");
+
         if (healthBar != null)
         {
             healthBar.transform.position = transform.position + new Vector3(0, 1.5f, 0);
@@ -46,10 +50,12 @@ public class SlimeMonster : MonoBehaviour
 
         if (player != null && Vector2.Distance(transform.position, player.position) <= followDistance)
         {
+            Debug.Log("Slime is following the player");
             FollowPlayer();
         }
         else
         {
+            Debug.Log("Slime is stopping due to follow distance");
             StopMoving();
         }
     }

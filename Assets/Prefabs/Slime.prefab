@@ -130,7 +130,7 @@ Rigidbody2D:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7223975699691152229}
-  m_BodyType: 1
+  m_BodyType: 0
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
@@ -194,7 +194,8 @@ MonoBehaviour:
   maxHealth: 50
   healthBarPrefab: {fileID: 4526500785064125212, guid: e366322ad4217d64eb54da87dcc5be9f, type: 3}
   speed: 2
-  followDistance: 5
+  followDistance: 7
+  stopDistance: 3
 --- !u!95 &2749442183566315675
 Animator:
   serializedVersion: 5
