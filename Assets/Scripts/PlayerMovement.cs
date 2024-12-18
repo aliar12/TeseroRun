@@ -155,10 +155,10 @@ public class PlayerMovement : MonoBehaviour
             gameManager.AddScore(5); // Add score when colliding with Coin
             Destroy(other.gameObject); // Destroy the coin
         }
-        else if (other.gameObject.CompareTag("Trap"))
-        {
-            gameManager.removePoints(50); // Remove points on trap collision
-        }
+        //else if (other.gameObject.CompareTag("Trap"))
+        //{
+        //    gameManager.removePoints(50); // Remove points on trap collision
+        //}
         else if (other.gameObject.CompareTag("Key"))
         {
             gameManager.AddKey(1); // Add key when colliding with Key
