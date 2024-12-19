@@ -1,7 +1,6 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.SceneManagement; // Include for scene management
+using UnityEngine.SceneManagement;
 
 public class PlayerMovement : MonoBehaviour
 {
@@ -9,24 +8,31 @@ public class PlayerMovement : MonoBehaviour
     public float runSpeed = 8f;
     public float jumpForce = 10f;
     public float attackDuration = 0.5f;
-    public GameObject swordSlashPrefab; // Slash prefab reference
+    public GameObject swordSlashPrefab;
     public GameObject slash;
+    public Vector3 slashOffset;
+    public GameManager gameManager;
+    public float fallThreshold = -10f;
+
     private bool isJumping = false;
     private bool isAttacking = false;
     private Rigidbody2D rb;
     private Animator animator;
     private float moveInput;
-    private float lastDirection = 1.0f; // Direction player is facing
-    public Vector3 slashOffset; // Offset for spawning slash
-    private int jumpCount = 0; // Counter for double jump
-    public GameManager gameManager;
-    public float fallThreshold = -10f; // Y-coordinate threshold for falling off the map
+    private float lastDirection = 1.0f;
+    private int jumpCount = 0;
+
+    // Health variables
+    public int maxHealth = 100;
+    public int currentHealth;
+    public HealthBar healthBar;
 
     private void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
-
+        currentHealth = maxHealth;
+        healthBar.SetMaxHealth(maxHealth); // Initialize health bar
     }
 
     private void Update()
@@ -35,16 +41,15 @@ public class PlayerMovement : MonoBehaviour
         HandleJump();
         HandleAttack();
         UpdateAnimator();
-        CheckFallOffMap(); // Check if the player has fallen off the map
+        CheckFallOffMap();
     }
 
     private void HandleMovement()
     {
-        moveInput = Input.GetAxisRaw("Horizontal"); // -1 for left, 1 for right, 0 for idle
+        moveInput = Input.GetAxisRaw("Horizontal");
 
         if (!isAttacking)
         {
-            // Set horizontal velocity
             float currentSpeed = Input.GetKey(KeyCode.LeftShift) ? runSpeed : moveSpeed;
             rb.velocity = new Vector2(moveInput * currentSpeed, rb.velocity.y);
 
@@ -55,7 +60,6 @@ public class PlayerMovement : MonoBehaviour
             }
             else
             {
-                // Stop horizontal movement when no key is pressed
                 rb.velocity = new Vector2(0, rb.velocity.y);
             }
         }
@@ -63,10 +67,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void FlipSprite(float direction, SpriteRenderer spriteRenderer)
     {
-        if (spriteRenderer == null)
-            return;
-
-        // Flip the character sprite by modifying the flipX property of the SpriteRenderer
+        if (spriteRenderer == null) return;
         spriteRenderer.flipX = direction < 0;
     }
 
@@ -79,7 +80,6 @@ public class PlayerMovement : MonoBehaviour
             isJumping = true;
         }
 
-        // Reset jump count when grounded
         if (rb.velocity.y == 0)
         {
             isJumping = false;
@@ -106,8 +106,6 @@ public class PlayerMovement : MonoBehaviour
 
     private void SpawnSlash()
     {
-        Debug.Log("Spawning slash!");
-
         Vector3 spawnPosition = transform.position + new Vector3(lastDirection * slashOffset.x, slashOffset.y, 0.0f);
         slash = Instantiate(swordSlashPrefab, spawnPosition, Quaternion.identity);
 
@@ -116,35 +114,38 @@ public class PlayerMovement : MonoBehaviour
         {
             slashRenderer.flipX = lastDirection < 0;
         }
-
-        Debug.Log("Slash spawned at position: " + spawnPosition);
     }
-
-
+    public void UnspawnSlash()
+    {
+        if (slash != null)
+        {
+            Destroy(slash);
+            slash = null; // Reset the reference
+        }
+    }
     private void UpdateAnimator()
     {
-        // Update animator parameters
         if (moveInput == 0)
         {
-            animator.SetFloat("CharacterSpeed", 1); // Idle
+            animator.SetFloat("CharacterSpeed", 1);
         }
         else if (Input.GetKey(KeyCode.LeftShift))
         {
-            animator.SetFloat("CharacterSpeed", 6); // Running
+            animator.SetFloat("CharacterSpeed", 6);
         }
         else
         {
-            animator.SetFloat("CharacterSpeed", 4); // Walking
+            animator.SetFloat("CharacterSpeed", 4);
         }
 
-        animator.SetBool("isJumping", isJumping); // Set jumping state
+        animator.SetBool("isJumping", isJumping);
     }
 
     private void CheckFallOffMap()
     {
         if (transform.position.y < fallThreshold)
         {
-            SceneManager.LoadScene(SceneManager.GetActiveScene().name); // Reload current scene
+            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
         }
     }
 
@@ -166,12 +167,32 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    public void UnspawnSlash()
+
+
+    public void TakeDamage(int damage)
     {
-        if (slash != null)
+        currentHealth -= damage;
+        healthBar.SetHealth(currentHealth); // Update health bar
+        if (currentHealth <= 0)
         {
-            Destroy(slash);
-            slash = null; // Reset the reference
+            currentHealth = 0;
+            Die();
         }
+    }
+
+    public void Heal(int amount)
+    {
+        currentHealth += amount;
+        if (currentHealth > maxHealth)
+        {
+            currentHealth = maxHealth;
+        }
+        healthBar.SetHealth(currentHealth); // Update health bar
+    }
+
+    private void Die()
+    {
+        Debug.Log("Player has died!");
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 }

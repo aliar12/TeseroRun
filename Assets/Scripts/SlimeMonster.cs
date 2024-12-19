@@ -19,9 +19,10 @@ public class SlimeMonster : MonoBehaviour
 
     private bool isDead = false;
 
+    private SpriteRenderer spriteRenderer;
+
     void Start()
     {
-        Debug.Log("Slime has started in Level1");
 
         currentHealth = maxHealth;
         healthBar = Instantiate(healthBarPrefab);
@@ -29,19 +30,21 @@ public class SlimeMonster : MonoBehaviour
 
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
+        spriteRenderer = GetComponent<SpriteRenderer>(); // Get the SpriteRenderer component
 
         GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
         if (playerObj != null)
         {
             player = playerObj.transform;
         }
+
+        // Disable collisions between the slime and the player
+        Physics2D.IgnoreCollision(GetComponent<Collider2D>(), playerObj.GetComponent<Collider2D>());
     }
 
     void Update()
     {
         if (isDead) return;
-
-        Debug.Log("Slime is updating...");
 
         if (healthBar != null)
         {
@@ -50,12 +53,10 @@ public class SlimeMonster : MonoBehaviour
 
         if (player != null && Vector2.Distance(transform.position, player.position) <= followDistance)
         {
-            Debug.Log("Slime is following the player");
             FollowPlayer();
         }
         else
         {
-            Debug.Log("Slime is stopping due to follow distance");
             StopMoving();
         }
     }
@@ -84,6 +85,12 @@ public class SlimeMonster : MonoBehaviour
 
         Vector2 direction = (player.position - transform.position).normalized;
         rb.velocity = new Vector2(direction.x * speed, rb.velocity.y); // Maintain gravity on Y-axis
+
+        // Flip the slime sprite based on the direction of movement
+        if (spriteRenderer != null)
+        {
+            spriteRenderer.flipX = direction.x > 0; // Flip when moving right
+        }
     }
 
     private void StopMoving()

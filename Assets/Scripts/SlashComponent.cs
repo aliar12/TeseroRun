@@ -32,17 +32,26 @@ public class SlashComponent : MonoBehaviour
         {
             Debug.Log("Enemy hit by slash!");
 
-            SlimeMonster enemy = other.GetComponent<SlimeMonster>();
-            if (enemy != null)
+            // Check if the object has a SlimeMonster script
+            SlimeMonster slimeEnemy = other.GetComponent<SlimeMonster>();
+            if (slimeEnemy != null)
             {
-                Debug.Log($"Applying damage: {damage}");
-                enemy.TakeDamage(damage);
+                Debug.Log($"Applying damage to SlimeMonster: {damage}");
+                slimeEnemy.TakeDamage(damage);
+                return; // Exit after applying damage to avoid unnecessary checks
             }
-            else
+
+            // Check if the object has a BossController script
+            BossController bossEnemy = other.GetComponent<BossController>();
+            if (bossEnemy != null)
             {
-                Debug.Log("No SlimeMonster script found on enemy!");
+                Debug.Log($"Applying damage to BossController: {damage}");
+                bossEnemy.TakeDamage(damage);
+                return; // Exit after applying damage to avoid unnecessary checks
             }
+
+            // If neither script is found
+            Debug.Log("No valid enemy script found on this object!");
         }
     }
-
 }
