@@ -20,7 +20,9 @@ public class PlayerMovement : MonoBehaviour
     public Vector3 slashOffset; // Offset for spawning slash
     private int jumpCount = 0; // Counter for double jump
     public GameManager gameManager;
-    public float fallThreshold = -10f; // Y-coordinate threshold for falling off the map
+    public float fallThreshold = -600f; // Y-coordinate threshold for falling off the map
+    public static int LevelScore = 0;
+
 
     private void Start()
     {
@@ -35,7 +37,16 @@ public class PlayerMovement : MonoBehaviour
         HandleJump();
         HandleAttack();
         UpdateAnimator();
-        CheckFallOffMap(); // Check if the player has fallen off the map
+        //CheckFallOffMap(); // Check if the player has fallen off the map
+        // Check if 10 keys have been collected and move to the next level
+
+        GameManager gameManager = FindObjectOfType<GameManager>();
+
+        if (gameManager.GetKeyScore() <= 0)
+        {
+            LoadNextScene();
+            gameManager.setKeyScore(10);
+        }
     }
 
     private void HandleMovement()
@@ -59,6 +70,16 @@ public class PlayerMovement : MonoBehaviour
                 rb.velocity = new Vector2(0, rb.velocity.y);
             }
         }
+    }
+
+
+    private void LoadNextScene()
+    {
+        int currentSceneIndex = SceneManager.GetActiveScene().buildIndex;
+        int nextSceneIndex = currentSceneIndex + 1; // Load the next scene
+        LevelScore = gameManager.GetScore();
+        gameManager.setKeyScore(10);
+        SceneManager.LoadScene(nextSceneIndex);
     }
 
     private void FlipSprite(float direction, SpriteRenderer spriteRenderer)
@@ -164,6 +185,13 @@ public class PlayerMovement : MonoBehaviour
             gameManager.AddKey(1); // Add key when colliding with Key
             Destroy(other.gameObject); // Destroy the key
         }
+
+        if (other.gameObject.CompareTag("FallZone"))
+        {
+            SceneManager.LoadScene(SceneManager.GetActiveScene().name); // Reload current scene
+            gameManager.setScore(LevelScore);
+            gameManager.setKeyScore(10);
+        }
     }
 
     public void UnspawnSlash()
@@ -174,4 +202,5 @@ public class PlayerMovement : MonoBehaviour
             slash = null; // Reset the reference
         }
     }
+
 }

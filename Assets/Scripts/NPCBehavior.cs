@@ -10,6 +10,8 @@ public class NPCBehavior : MonoBehaviour
     private Animator animator;
     private Transform targetEnemy;
     private float moveInput;
+    public GameManager gameManager;
+
 
     void Start()
     {
@@ -89,6 +91,9 @@ public class NPCBehavior : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
+
+        GameManager gameManager = FindObjectOfType<GameManager>();
+
         if (collision.gameObject.CompareTag("Enemy"))
         {
             SlimeMonster enemyScript = collision.gameObject.GetComponent<SlimeMonster>();
@@ -100,6 +105,20 @@ public class NPCBehavior : MonoBehaviour
                     Destroy(enemyScript.getHealthBar()); // Destroy the health bar
                 }
             }
+        }
+        if (collision.gameObject.CompareTag("Coin"))
+        {
+            gameManager.AddScore(5); // Add score when colliding with Coin
+            Destroy(collision.gameObject); // Destroy the coin
+        }
+        //else if (other.gameObject.CompareTag("Trap"))
+        //{
+        //    gameManager.removePoints(50); // Remove points on trap collision
+        //}
+        else if (collision.gameObject.CompareTag("Key"))
+        {
+            gameManager.AddKey(1); // Add key when colliding with Key
+            Destroy(collision.gameObject); // Destroy the key
         }
     }
 

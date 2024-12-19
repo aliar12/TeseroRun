@@ -6,12 +6,14 @@ using UnityEngine.SceneManagement;
 public class GameManager : MonoBehaviour
 {
     public TMP_Text scoreText;
-    private int score;
+    private static int score;
     public TMP_Text keyText;
-    private int keyScore = 10;
+    private static int keyScore = 10;
     private Rigidbody2D rb;
     public GameObject NPCHelper;
     public GameObject NPCPrefab;
+    public static int LevelScore = 0;
+    public static GameManager Instance;
 
     private GameObject currentNPC; // Tracks the currently spawned NPC
 
@@ -21,8 +23,8 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
-        scoreText.text = "Coins: 0";
-        keyText.text = "Remaining Keys: 10";
+        scoreText.text = "Coins: " + score;
+        keyText.text = "Remaining Keys: " + keyScore;
         rb = GetComponent<Rigidbody2D>();
     }
 
@@ -35,20 +37,39 @@ public class GameManager : MonoBehaviour
             return;
         }
 
-        // Check if 10 keys have been collected and move to the next level
-        if (keyScore <= 0)
-        {
-            LoadNextLevel();
-        }
-
         // Enable NPC Helper if score is 10 and no NPC is currently active
-        if (score >= 10)
+        if (score >= 80)
         {
             NPCHelper.gameObject.SetActive(true);
+        }
+        else 
+        {
+            NPCHelper.gameObject.SetActive(false);
         }
 
     }
 
+    public int GetKeyScore() // New method to get the current score
+    {
+        return keyScore;
+    }
+
+    public void setKeyScore(int newKeyScore) // New method to get the current score
+    {
+        keyScore = newKeyScore;
+        UpdateText();
+    }
+
+    public int GetScore() // New method to get the current score
+    {
+        return score;
+    }
+
+    public void setScore(int newScore) // New method to get the current score
+    {
+        score = newScore;
+        UpdateText();
+    }
 
     public void AddScore(int points)
     {
@@ -64,7 +85,7 @@ public class GameManager : MonoBehaviour
 
     public void RemovePoints(int points)
     {
-        score = score -= points;
+        score = score - points;
         UpdateText();
     }
 
@@ -73,25 +94,23 @@ public class GameManager : MonoBehaviour
         keyScore = keyScore - points;
         UpdateText();
 
-        if (keyScore <= 0)
-        {
-            LoadNextLevel();
-        }
+        //if (keyScore <= 0)
+        //{
+        //    LoadNextScene();
+        //    keyScore = 10;
+        //}
     }
 
-    void LoadNextLevel()
-    {
-        int currentLevelIndex = System.Array.IndexOf(sceneNames, SceneManager.GetActiveScene().name);
-        int nextLevelIndex = currentLevelIndex + 1;
-
-        if (nextLevelIndex < sceneNames.Length)
-        {
-            SceneManager.LoadScene(sceneNames[nextLevelIndex]);
-        }
-        else
-        {
-            Debug.Log("Game Over or All Levels Complete!");
-            SceneManager.LoadScene(sceneNames[0]);
-        }
-    }
+    //void Awake()
+    //{
+    //    if (Instance == null)
+    //    {
+    //        Instance = this;
+    //        DontDestroyOnLoad(gameObject);
+    //    }
+    //    else
+    //    {
+    //        Destroy(gameObject);
+    //    }
+    //}
 }

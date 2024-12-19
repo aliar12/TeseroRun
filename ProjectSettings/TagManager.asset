@@ -8,6 +8,8 @@ TagManager:
   - Coin
   - Trap
   - Key
+  - Ground
+  - FallZone
   layers:
   - Default
   - TransparentFX

@@ -11,23 +11,18 @@ public class NPCSpawn : MonoBehaviour
                                    // Start is called before the first frame update
     public GameManager gameManager;
 
+
     void Start()
     {
-        
     }
 
     // Update is called once per frame
     void Update()
     {
-        
     }
 
     public void SpawnNPC()
     {
-
-        // Deduct 10 points from the score
-        //gameManager.AddScore(50);
-
         // Ensure only one NPC is active at a time
         if (currentNPC != null)
         {
@@ -35,9 +30,20 @@ public class NPCSpawn : MonoBehaviour
             return;
         }
 
+        // Find the GameManager and deduct 10 points
+        GameManager gameManager = FindObjectOfType<GameManager>();
+        if (gameManager != null)
+        {
+            gameManager.RemovePoints(80);
+        }
+        else
+        {
+            Debug.LogError("GameManager not found!");
+            return;
+        }
+
         // Find the main character by tag
         GameObject mainCharacterObj = GameObject.FindGameObjectWithTag("Player");
-
         if (mainCharacterObj == null)
         {
             Debug.LogError("Player not found!");
@@ -53,11 +59,17 @@ public class NPCSpawn : MonoBehaviour
 
         // Instantiate the NPC and assign it to the currentNPC variable
         currentNPC = Instantiate(NPCPrefab, spawnPosition, Quaternion.identity);
-        Invoke("DestroyNPC", 30f);
+        Invoke("DestroyNPC", 10f);
     }
+
 
     public void DestroyNPC()
     {
         Destroy(currentNPC);
+    }
+
+    void Awake()
+    {
+        DontDestroyOnLoad(this.gameObject);
     }
 }
