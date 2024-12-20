@@ -12,41 +12,44 @@ public class SlimeMonster : MonoBehaviour
 
     public float speed = 2f;
     public float followDistance = 8f;
-    public float stopDistance = 3f; // Distance at which the slime stops moving to avoid pushing the player
+    public float attackRange = 1.5f; // Range for the attack
+    public int attackDamage = 20;
+    public float attackCooldown = 2f;
+    public float damageTiming = 0.5f; // Time (in seconds) into the attack animation to apply damage
+
     private Transform player;
     private Rigidbody2D rb;
     private Animator animator;
+    private SpriteRenderer spriteRenderer;
 
     private bool isDead = false;
+    private bool isAttacking = false;
 
-    private SpriteRenderer spriteRenderer;
+    private float lastAttackTime;
 
     void Start()
     {
-
         currentHealth = maxHealth;
         healthBar = Instantiate(healthBarPrefab);
         healthBarFill = healthBar.transform.Find("Background/Fill").GetComponent<Image>();
 
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
-        spriteRenderer = GetComponent<SpriteRenderer>(); // Get the SpriteRenderer component
+        spriteRenderer = GetComponent<SpriteRenderer>();
 
         GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
         if (playerObj != null)
         {
             player = playerObj.transform;
-        }
 
-        // Disable collisions between the slime and the player
-        Physics2D.IgnoreCollision(GetComponent<Collider2D>(), playerObj.GetComponent<Collider2D>());
+            // Ignore collisions between the slime and the player
+            Physics2D.IgnoreCollision(GetComponent<Collider2D>(), playerObj.GetComponent<Collider2D>());
+        }
     }
 
     void Update()
     {
         if (isDead) return;
-
-        //Debug.Log("Slime is updating...");
 
         if (healthBar != null)
         {
@@ -55,29 +58,24 @@ public class SlimeMonster : MonoBehaviour
 
         if (player != null && Vector2.Distance(transform.position, player.position) <= followDistance)
         {
-            //Debug.Log("Slime is following the player");
             FollowPlayer();
         }
         else
         {
-            //Debug.Log("Slime is stopping due to follow distance");
             StopMoving();
         }
     }
 
     private void FollowPlayer()
     {
-        if (isDead) return; // Prevent movement if dead
-
-        // Check if "Hit" animation is playing
-        if (animator != null && animator.GetCurrentAnimatorStateInfo(0).IsName("SlimeHit")) return;
+        if (isDead || isAttacking) return;
 
         float distanceToPlayer = Vector2.Distance(transform.position, player.position);
 
-        // Stop moving if within the stop distance
-        if (distanceToPlayer <= stopDistance)
+        // Check if the slime should attack
+        if (distanceToPlayer <= attackRange && Time.time >= lastAttackTime + attackCooldown)
         {
-            StopMoving();
+            Attack();
             return;
         }
 
@@ -102,8 +100,49 @@ public class SlimeMonster : MonoBehaviour
         rb.velocity = Vector2.zero; // Stop all horizontal movement
         if (animator != null)
         {
-            animator.SetBool("isRunning", false); // Stop running animation
+            animator.SetBool("isRunning", false); // Stop running animation, transitions to idle
         }
+    }
+
+    private void Attack()
+    {
+        isAttacking = true;
+        lastAttackTime = Time.time;
+
+        if (animator != null)
+        {
+            animator.SetTrigger("Attack");
+        }
+
+        // Stop movement during attack
+        StopMoving();
+
+        // Apply damage after a short delay (simulating damage timing during the attack animation)
+        Invoke(nameof(ApplyDamage), damageTiming);
+
+        // Reset attack state after the attack animation completes
+        Invoke(nameof(ResetAttack), 1f); // Adjust duration to match your attack animation length
+    }
+
+    private void ApplyDamage()
+    {
+        if (player == null || isDead) return;
+
+        float distanceToPlayer = Vector2.Distance(transform.position, player.position);
+        if (distanceToPlayer <= attackRange)
+        {
+            PlayerMovement playerMovement = player.GetComponent<PlayerMovement>();
+            if (playerMovement != null)
+            {
+                playerMovement.TakeDamage(attackDamage);
+                Debug.Log("Slime damaged the player!");
+            }
+        }
+    }
+
+    private void ResetAttack()
+    {
+        isAttacking = false;
     }
 
     public void TakeDamage(int amount)
@@ -118,12 +157,9 @@ public class SlimeMonster : MonoBehaviour
         if (animator != null)
         {
             animator.SetTrigger("Hit");
-            animator.Play("SlimeHit", 0, 0f); // Force "Hit" animation
         }
 
-        // Stop movement during hit animation
         StopMoving();
-
         UpdateHealthBar();
 
         if (currentHealth <= 0)
@@ -148,24 +184,20 @@ public class SlimeMonster : MonoBehaviour
         if (isDead) return;
         isDead = true;
 
-        Debug.Log("Slime died!");
-
         if (animator != null)
         {
             animator.SetTrigger("Die");
-            animator.Play("SlimeDie", 0, 0f); // Force "Die" animation
         }
 
-        StopMoving(); // Stop movement completely
-        rb.velocity = Vector2.zero; // Ensure no movement on Y-axis
+        StopMoving();
+        rb.velocity = Vector2.zero;
 
         Destroy(healthBar);
-        Destroy(gameObject, 1.5f); // Destroy after death animation
+        Destroy(gameObject, 1.5f);
     }
 
     public GameObject getHealthBar()
     {
-
         return healthBar;
     }
 }
