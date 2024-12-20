@@ -11,7 +11,7 @@ public class SlimeMonster : MonoBehaviour
     private Image healthBarFill;
 
     public float speed = 2f;
-    public float followDistance = 8f;
+    public float triggerDistance = 8f; // Distance at which the slime starts following the player
     public float attackRange = 1.5f; // Range for the attack
     public int attackDamage = 20;
     public float attackCooldown = 2f;
@@ -24,6 +24,7 @@ public class SlimeMonster : MonoBehaviour
 
     private bool isDead = false;
     private bool isAttacking = false;
+    private bool isFollowing = false; // Whether the slime is actively following the player
 
     private float lastAttackTime;
 
@@ -56,13 +57,25 @@ public class SlimeMonster : MonoBehaviour
             healthBar.transform.position = transform.position + new Vector3(0, 1.5f, 0);
         }
 
-        if (player != null && Vector2.Distance(transform.position, player.position) <= followDistance)
+        if (player != null)
         {
-            FollowPlayer();
-        }
-        else
-        {
-            StopMoving();
+            float distanceToPlayer = Vector2.Distance(transform.position, player.position);
+
+            // If the player is within the trigger distance, start following
+            if (distanceToPlayer <= triggerDistance)
+            {
+                isFollowing = true;
+            }
+
+            // If following, handle movement and attacks
+            if (isFollowing)
+            {
+                FollowPlayer();
+            }
+            else
+            {
+                StopMoving();
+            }
         }
     }
 

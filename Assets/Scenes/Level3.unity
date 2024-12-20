@@ -708,7 +708,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &272810719
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3755,6 +3755,10 @@ PrefabInstance:
       propertyPath: stopDistance
       value: 3
       objectReference: {fileID: 0}
+    - target: {fileID: 7051708754312978921, guid: 8ff8eba7648366542ba625320a15f4a1, type: 3}
+      propertyPath: followDistance
+      value: 7
+      objectReference: {fileID: 0}
     - target: {fileID: 7223975699691152229, guid: 8ff8eba7648366542ba625320a15f4a1, type: 3}
       propertyPath: m_Name
       value: Slime (2)
@@ -4656,6 +4660,14 @@ PrefabInstance:
       propertyPath: gameManager
       value: 
       objectReference: {fileID: 315799397}
+    - target: {fileID: 1065454777338673457, guid: db14545768313694997f41e6be92cfda, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -9.73
+      objectReference: {fileID: 0}
+    - target: {fileID: 1065454777338673457, guid: db14545768313694997f41e6be92cfda, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -5.28
+      objectReference: {fileID: 0}
     - target: {fileID: 1500992371567420936, guid: db14545768313694997f41e6be92cfda, type: 3}
       propertyPath: m_SortingOrder
       value: 100
