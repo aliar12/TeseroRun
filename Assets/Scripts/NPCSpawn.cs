@@ -34,7 +34,7 @@ public class NPCSpawn : MonoBehaviour
         GameManager gameManager = FindObjectOfType<GameManager>();
         if (gameManager != null)
         {
-            gameManager.RemovePoints(80);
+            gameManager.removePoints(80);
         }
         else
         {

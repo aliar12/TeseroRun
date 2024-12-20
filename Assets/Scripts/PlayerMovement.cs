@@ -48,11 +48,12 @@ public class PlayerMovement : MonoBehaviour
 
         GameManager gameManager = FindObjectOfType<GameManager>();
 
-        if (gameManager.GetKeyScore() <= 0)
+        if (gameManager.GetKeyScore() <= 0 && SceneManager.GetActiveScene().buildIndex != 3)
         {
             LoadNextScene();
             gameManager.setKeyScore(10);
         }
+
     }
 
     private void HandleMovement()
@@ -177,10 +178,18 @@ public class PlayerMovement : MonoBehaviour
             gameManager.AddScore(5); // Add score when colliding with Coin
             Destroy(other.gameObject); // Destroy the coin
         }
-        //else if (other.gameObject.CompareTag("Trap"))
-        //{
-        //    gameManager.removePoints(50); // Remove points on trap collision
-        //}
+        else if (other.gameObject.CompareTag("Trap"))
+        {
+            TakeDamage(10); // Remove points on trap collision
+        }
+        else if (other.gameObject.CompareTag("TrapRed"))
+        {
+            TakeDamage(50); // Remove points on trap collision
+        }
+        else if (other.gameObject.CompareTag("Enemy"))
+        {
+            TakeDamage(20); // Remove points on trap collision
+        }
         else if (other.gameObject.CompareTag("Key"))
         {
             gameManager.AddKey(1); // Add key when colliding with Key
@@ -227,5 +236,7 @@ public class PlayerMovement : MonoBehaviour
     {
         Debug.Log("Player has died!");
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        gameManager.setScore(LevelScore);
+        gameManager.setKeyScore(10);
     }
 }

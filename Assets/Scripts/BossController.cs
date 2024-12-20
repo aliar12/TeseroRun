@@ -10,7 +10,7 @@ public class BossController : MonoBehaviour
     private Transform player; // Reference to the player
     private bool isImmune = false;
     private bool hasLanded = false;
-    private int health = 600;
+    private int health = 300;
 
     public Slider healthBar; // Reference to the health bar UI
     public float idleDuration = 2f;

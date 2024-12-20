@@ -29,7 +29,7 @@ public class GameManager : MonoBehaviour
     private bool bossSpawned = false; // To track if the boss has been spawned
 
     // Start is called before the first frame update
-    private bool isNPCActive = false; // Tracks if an NPC is active
+    //private bool isNPCActive = false; // Tracks if an NPC is active
 
     void Start()
     {
@@ -55,23 +55,24 @@ public class GameManager : MonoBehaviour
         if (keyScore <= 0 && !bossSpawned)
         {
             TriggerBossSpawn(); // Trigger the boss spawn
-        // Check if the GameManager is active
-        if (!gameObject.activeSelf)
-        {
-            Debug.LogWarning("GameManager is inactive. Update logic will not execute.");
-            return;
-        }
 
-        // Enable NPC Helper if score is 10 and no NPC is currently active
-        if (score >= 80)
-        {
-            NPCHelper.gameObject.SetActive(true);
-        }
-        else 
-        {
-            NPCHelper.gameObject.SetActive(false);
-        }
+        }// Check if the GameManager is active
+            if (!gameObject.activeSelf)
+            {
+                Debug.LogWarning("GameManager is inactive. Update logic will not execute.");
+                return;
+            }
 
+            // Enable NPC Helper if score is 10 and no NPC is currently active
+            if (score >= 80)
+            {
+                NPCHelper.gameObject.SetActive(true);
+            }
+            else
+            {
+                NPCHelper.gameObject.SetActive(false);
+            }
+        
     }
 
     public int GetKeyScore() // New method to get the current score
@@ -102,16 +103,16 @@ public class GameManager : MonoBehaviour
         UpdateText();
     }
 
-    void UpdateText()
-    {
-        scoreText.text = "Coins: " + score;
-        keyText.text = "Remaining Keys: " + keyScore;
-    }
+    //void UpdateText()
+    //{
+    //    scoreText.text = "Coins: " + score;
+    //    keyText.text = "Remaining Keys: " + keyScore;
+    //}
 
-    public void RemovePoints(int points)
-    {
-        return score; // Return the current score as coins
-    }
+    //public void RemovePoints(int points)
+    //{
+    //    return score; // Return the current score as coins
+    //}
 
     public void AddKey(int points)
     {
@@ -185,6 +186,11 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    public int GetCoins()
+    {
+        return score;
+    }
+
     void LoadNextLevel()
     {
         if (bossSpawned)
@@ -226,4 +232,3 @@ public class GameManager : MonoBehaviour
     //        Destroy(gameObject);
     //    }
     //}
-}

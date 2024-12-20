@@ -66,7 +66,7 @@ public class PlayerAbilities : MonoBehaviour
 
     private void ActivateSpeedBoost()
     {
-        if (gameManager.GetCoins() >= 5)
+        if (gameManager.GetScore() >= 5)
         {
             gameManager.removePoints(5); // Deduct coins using GameManager
             StartCoroutine(SpeedBoostCoroutine());
@@ -88,7 +88,7 @@ public class PlayerAbilities : MonoBehaviour
 
     private void ActivateJumpBoost()
     {
-        if (gameManager.GetCoins() >= 5)
+        if (gameManager.GetScore() >= 5)
         {
             gameManager.removePoints(5); // Deduct coins using GameManager
             StartCoroutine(JumpBoostCoroutine());
@@ -110,7 +110,7 @@ public class PlayerAbilities : MonoBehaviour
 
     private void ActivateDamageBoost()
     {
-        if (gameManager.GetCoins() >= 10)
+        if (gameManager.GetScore() >= 10)
         {
             gameManager.removePoints(10); // Deduct coins using GameManager
             StartCoroutine(DamageBoostCoroutine());
@@ -132,7 +132,7 @@ public class PlayerAbilities : MonoBehaviour
 
     private void ActivateHeal()
     {
-        if (gameManager.GetCoins() >= 10)
+        if (gameManager.GetScore() >= 10)
         {
             if (playerMovement.currentHealth < playerMovement.maxHealth)
             {
