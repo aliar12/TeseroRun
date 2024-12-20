@@ -12,20 +12,22 @@ public class PlayerMovement : MonoBehaviour
     public GameObject slash;
     public Vector3 slashOffset;
     public GameManager gameManager;
-    public float fallThreshold = -10f;
 
     private bool isJumping = false;
     private bool isAttacking = false;
     private Rigidbody2D rb;
     private Animator animator;
     private float moveInput;
-    private float lastDirection = 1.0f;
-    private int jumpCount = 0;
 
     // Health variables
     public int maxHealth = 100;
     public int currentHealth;
     public HealthBar healthBar;
+    private float lastDirection = 1.0f; // Direction player is facing
+    private int jumpCount = 0; // Counter for double jump
+    public float fallThreshold = -600f; // Y-coordinate threshold for falling off the map
+    public static int LevelScore = 0;
+
 
     private void Start()
     {
@@ -41,7 +43,16 @@ public class PlayerMovement : MonoBehaviour
         HandleJump();
         HandleAttack();
         UpdateAnimator();
-        CheckFallOffMap();
+        //CheckFallOffMap(); // Check if the player has fallen off the map
+        // Check if 10 keys have been collected and move to the next level
+
+        GameManager gameManager = FindObjectOfType<GameManager>();
+
+        if (gameManager.GetKeyScore() <= 0)
+        {
+            LoadNextScene();
+            gameManager.setKeyScore(10);
+        }
     }
 
     private void HandleMovement()
@@ -63,6 +74,16 @@ public class PlayerMovement : MonoBehaviour
                 rb.velocity = new Vector2(0, rb.velocity.y);
             }
         }
+    }
+
+
+    private void LoadNextScene()
+    {
+        int currentSceneIndex = SceneManager.GetActiveScene().buildIndex;
+        int nextSceneIndex = currentSceneIndex + 1; // Load the next scene
+        LevelScore = gameManager.GetScore();
+        gameManager.setKeyScore(10);
+        SceneManager.LoadScene(nextSceneIndex);
     }
 
     private void FlipSprite(float direction, SpriteRenderer spriteRenderer)
@@ -156,14 +177,21 @@ public class PlayerMovement : MonoBehaviour
             gameManager.AddScore(5); // Add score when colliding with Coin
             Destroy(other.gameObject); // Destroy the coin
         }
-        else if (other.gameObject.CompareTag("Trap"))
-        {
-            gameManager.removePoints(50); // Remove points on trap collision
-        }
+        //else if (other.gameObject.CompareTag("Trap"))
+        //{
+        //    gameManager.removePoints(50); // Remove points on trap collision
+        //}
         else if (other.gameObject.CompareTag("Key"))
         {
             gameManager.AddKey(1); // Add key when colliding with Key
             Destroy(other.gameObject); // Destroy the key
+        }
+
+        if (other.gameObject.CompareTag("FallZone"))
+        {
+            SceneManager.LoadScene(SceneManager.GetActiveScene().name); // Reload current scene
+            gameManager.setScore(LevelScore);
+            gameManager.setKeyScore(10);
         }
     }
 

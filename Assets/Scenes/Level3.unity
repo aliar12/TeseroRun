@@ -3934,10 +3934,10 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a1965ead930354e48b43250155720de6, type: 3}
---- !u!114 &1509936202 stripped
+--- !u!114 &1474793595 stripped
 MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 6532953666948582942, guid: 5f4def80d1109b94d9159c91c635243d, type: 3}
-  m_PrefabInstance: {fileID: 96386322}
+  m_CorrespondingSourceObject: {fileID: 1599720478456883018, guid: 5f4def80d1109b94d9159c91c635243d, type: 3}
+  m_PrefabInstance: {fileID: 929673945}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
   m_Enabled: 1
@@ -4416,13 +4416,13 @@ MonoBehaviour:
     height: 1
 --- !u!114 &1939760519 stripped
 MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 1599720478456883018, guid: 5f4def80d1109b94d9159c91c635243d, type: 3}
-  m_PrefabInstance: {fileID: 96386322}
+  m_CorrespondingSourceObject: {fileID: 5853988244111741226, guid: afe363fa593d0974397854bf6ff611f1, type: 3}
+  m_PrefabInstance: {fileID: 866881181}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Script: {fileID: 11500000, guid: f6db590f38076c043b00a4eb7eeface5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &1948328077
@@ -4723,7 +4723,7 @@ PrefabInstance:
     - target: {fileID: 5933598611967740962, guid: db14545768313694997f41e6be92cfda, type: 3}
       propertyPath: slash
       value: 
-      objectReference: {fileID: 705214178}
+      objectReference: {fileID: 0}
     - target: {fileID: 5933598611967740962, guid: db14545768313694997f41e6be92cfda, type: 3}
       propertyPath: healthBar
       value: 
@@ -4735,7 +4735,7 @@ PrefabInstance:
     - target: {fileID: 5933598611967740962, guid: db14545768313694997f41e6be92cfda, type: 3}
       propertyPath: gameManager
       value: 
-      objectReference: {fileID: 973169335}
+      objectReference: {fileID: 1920343433}
     - target: {fileID: 5933598611967740962, guid: db14545768313694997f41e6be92cfda, type: 3}
       propertyPath: swordSlashPrefab
       value: 
@@ -5435,7 +5435,7 @@ PrefabInstance:
     - target: {fileID: 283348000376300588, guid: 92fe84c627d2279479b753e044ae5936, type: 3}
       propertyPath: _player
       value: 
-      objectReference: {fileID: 1823596354}
+      objectReference: {fileID: 635918289}
     - target: {fileID: 283348000376300588, guid: 92fe84c627d2279479b753e044ae5936, type: 3}
       propertyPath: _cameraOffset.x
       value: 11
@@ -5641,7 +5641,6 @@ SceneRoots:
   - {fileID: 565890818}
   - {fileID: 486438544}
   - {fileID: 2105076512}
-  - {fileID: 394005144}
   - {fileID: 1402492524}
   - {fileID: 1365246758}
   - {fileID: 1314268155}
@@ -5658,8 +5657,6 @@ SceneRoots:
   - {fileID: 1363854836}
   - {fileID: 1271750105}
   - {fileID: 857769839}
-  - {fileID: 1149666119}
-  - {fileID: 96386322}
   - {fileID: 791572374}
   - {fileID: 51829977}
   - {fileID: 1615139231}

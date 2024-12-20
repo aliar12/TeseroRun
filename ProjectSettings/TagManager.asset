@@ -9,6 +9,8 @@ TagManager:
   - Trap
   - Key
   - Projectile
+  - Ground
+  - FallZone
   layers:
   - Default
   - TransparentFX

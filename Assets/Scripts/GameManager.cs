@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using UnityEngine.SceneManagement;
@@ -8,10 +7,16 @@ using UnityEngine.UI;
 public class GameManager : MonoBehaviour
 {
     public TMP_Text scoreText;
-    private int score;
+    private static int score;
     public TMP_Text keyText;
-    private int keyScore = 10; // Number of keys to collect
+    private static int keyScore = 10;
     private Rigidbody2D rb;
+    public GameObject NPCHelper;
+    public GameObject NPCPrefab;
+    public static int LevelScore = 0;
+    public static GameManager Instance;
+
+    private GameObject currentNPC; // Tracks the currently spawned NPC
 
     private string[] sceneNames = { "Level1", "Level3" };
 
@@ -24,9 +29,11 @@ public class GameManager : MonoBehaviour
     private bool bossSpawned = false; // To track if the boss has been spawned
 
     // Start is called before the first frame update
+    private bool isNPCActive = false; // Tracks if an NPC is active
+
     void Start()
     {
-        scoreText.text = "Coins: 0";
+        scoreText.text = "Coins: " + score;
         keyText.text = "Remaining Keys: " + keyScore;
         rb = GetComponent<Rigidbody2D>();
 
@@ -42,14 +49,51 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    // Update is called once per frame
     void Update()
     {
         // Check if all keys are collected and trigger boss spawn
         if (keyScore <= 0 && !bossSpawned)
         {
             TriggerBossSpawn(); // Trigger the boss spawn
+        // Check if the GameManager is active
+        if (!gameObject.activeSelf)
+        {
+            Debug.LogWarning("GameManager is inactive. Update logic will not execute.");
+            return;
         }
+
+        // Enable NPC Helper if score is 10 and no NPC is currently active
+        if (score >= 80)
+        {
+            NPCHelper.gameObject.SetActive(true);
+        }
+        else 
+        {
+            NPCHelper.gameObject.SetActive(false);
+        }
+
+    }
+
+    public int GetKeyScore() // New method to get the current score
+    {
+        return keyScore;
+    }
+
+    public void setKeyScore(int newKeyScore) // New method to get the current score
+    {
+        keyScore = newKeyScore;
+        UpdateText();
+    }
+
+    public int GetScore() // New method to get the current score
+    {
+        return score;
+    }
+
+    public void setScore(int newScore) // New method to get the current score
+    {
+        score = newScore;
+        UpdateText();
     }
 
     public void AddScore(int points)
@@ -58,7 +102,13 @@ public class GameManager : MonoBehaviour
         UpdateText();
     }
 
-    public int GetCoins()
+    void UpdateText()
+    {
+        scoreText.text = "Coins: " + score;
+        keyText.text = "Remaining Keys: " + keyScore;
+    }
+
+    public void RemovePoints(int points)
     {
         return score; // Return the current score as coins
     }
@@ -157,4 +207,23 @@ public class GameManager : MonoBehaviour
             SceneManager.LoadScene(sceneNames[0]);
         }
     }
+        //if (keyScore <= 0)
+        //{
+        //    LoadNextScene();
+        //    keyScore = 10;
+        //}
+    }
+
+    //void Awake()
+    //{
+    //    if (Instance == null)
+    //    {
+    //        Instance = this;
+    //        DontDestroyOnLoad(gameObject);
+    //    }
+    //    else
+    //    {
+    //        Destroy(gameObject);
+    //    }
+    //}
 }

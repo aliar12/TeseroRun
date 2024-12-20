@@ -46,6 +46,8 @@ public class SlimeMonster : MonoBehaviour
     {
         if (isDead) return;
 
+        //Debug.Log("Slime is updating...");
+
         if (healthBar != null)
         {
             healthBar.transform.position = transform.position + new Vector3(0, 1.5f, 0);
@@ -53,10 +55,12 @@ public class SlimeMonster : MonoBehaviour
 
         if (player != null && Vector2.Distance(transform.position, player.position) <= followDistance)
         {
+            //Debug.Log("Slime is following the player");
             FollowPlayer();
         }
         else
         {
+            //Debug.Log("Slime is stopping due to follow distance");
             StopMoving();
         }
     }
@@ -157,5 +161,11 @@ public class SlimeMonster : MonoBehaviour
 
         Destroy(healthBar);
         Destroy(gameObject, 1.5f); // Destroy after death animation
+    }
+
+    public GameObject getHealthBar()
+    {
+
+        return healthBar;
     }
 }
