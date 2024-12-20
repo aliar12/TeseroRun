@@ -56,12 +56,11 @@ public class GameManager : MonoBehaviour
     {
         score += points; // Increment coins
         UpdateText();
+    }
 
-        // Debug for clarity
-        if (score >= totalCoins)
-        {
-            Debug.Log("All coins collected, but boss spawn depends on keys.");
-        }
+    public int GetCoins()
+    {
+        return score; // Return the current score as coins
     }
 
     public void AddKey(int points)
@@ -87,6 +86,7 @@ public class GameManager : MonoBehaviour
     public void removePoints(int points)
     {
         score -= points; // Decrement coins
+        score = Mathf.Max(0, score); // Ensure score doesn't go negative
         UpdateText();
     }
 
@@ -115,15 +115,16 @@ public class GameManager : MonoBehaviour
         if (bossSpawnScene != null)
         {
             bossSpawnScene.SetActive(true);
-            Debug.Log("Boss has spawned!");
+            Transform bossTransform = bossSpawnScene.transform;
+            bossTransform.position = new Vector3(112f, 9f, 0f);
 
-            // Enable the BossController script
+            Debug.Log($"Boss spawned at position: {bossTransform.position}");
+
             if (bossController != null)
             {
-                bossController.enabled = true; // Enable boss logic
-                bossController.StartBossBehavior(); // Trigger the boss behavior
+                bossController.enabled = true;
+                bossController.StartBossBehavior();
 
-                // Enable and initialize the health bar
                 if (bossHealthBar != null)
                 {
                     bossHealthBar.gameObject.SetActive(true);
@@ -131,13 +132,8 @@ public class GameManager : MonoBehaviour
                     bossHealthBar.value = bossController.GetCurrentHealth();
                 }
             }
-            else
-            {
-                Debug.LogWarning("BossController script not found on spawned Boss!");
-            }
         }
     }
-
 
     void LoadNextLevel()
     {

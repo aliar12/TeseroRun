@@ -5,7 +5,7 @@ public class PlayerAttack : MonoBehaviour
 {
     public GameObject knife; // Reference to the Knife GameObject
     public int knifeDamage = 20;
-    public float swingDuration = 0.2f;  // Duration of the knife swing
+    public float swingDuration = 0.2f; // Duration of the knife swing
 
     private bool isSwinging = false;
 
@@ -21,7 +21,7 @@ public class PlayerAttack : MonoBehaviour
     private IEnumerator SwingKnife()
     {
         isSwinging = true;
-        knife.GetComponent<Collider2D>().enabled = true;  // Enable the knife collider
+        knife.GetComponent<Collider2D>().enabled = true; // Enable the knife collider
 
         yield return new WaitForSeconds(swingDuration);
 
@@ -31,14 +31,32 @@ public class PlayerAttack : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        // This method needs to be on the Knife GameObject for collision detection
-        if (isSwinging && other.CompareTag("Enemy"))
+        if (!isSwinging) return;
+
+        // Handle enemy collision
+        if (other.CompareTag("Enemy"))
         {
-            // Attempt to get the Enemy script on the collided object
             Enemy enemy = other.GetComponent<Enemy>();
             if (enemy != null)
             {
                 enemy.TakeDamage(knifeDamage);
+                Debug.Log("Hit enemy with knife!");
+            }
+        }
+        // Handle projectile deflection
+        else if (other.CompareTag("Projectile"))
+        {
+            ArmProjectileBehavior projectile = other.GetComponent<ArmProjectileBehavior>();
+            if (projectile != null)
+            {
+                // Deflect the projectile toward the boss
+                GameObject boss = GameObject.FindGameObjectWithTag("Enemy");
+                if (boss != null)
+                {
+                    Vector3 deflectDirection = (boss.transform.position - transform.position).normalized;
+                    projectile.Deflect(deflectDirection);
+                    Debug.Log("Projectile deflected toward the boss!");
+                }
             }
         }
     }

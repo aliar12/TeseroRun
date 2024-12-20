@@ -53,5 +53,27 @@ public class SlashComponent : MonoBehaviour
             // If neither script is found
             Debug.Log("No valid enemy script found on this object!");
         }
+        else if (other.CompareTag("Projectile")) // Handle projectile deflection
+        {
+            Debug.Log("Slash hit a projectile!");
+
+            // Check if the projectile has an ArmProjectileBehavior script
+            ArmProjectileBehavior armProjectile = other.GetComponent<ArmProjectileBehavior>();
+            if (armProjectile != null)
+            {
+                // Deflect the projectile back toward the boss
+                GameObject boss = GameObject.FindGameObjectWithTag("Enemy");
+                if (boss != null)
+                {
+                    Vector3 deflectDirection = (boss.transform.position - transform.position).normalized;
+                    armProjectile.Deflect(deflectDirection);
+                    Debug.Log($"Projectile deflected toward the boss! Direction: {deflectDirection}");
+                }
+                else
+                {
+                    Debug.LogWarning("No boss found to deflect the projectile toward!");
+                }
+            }
+        }
     }
 }

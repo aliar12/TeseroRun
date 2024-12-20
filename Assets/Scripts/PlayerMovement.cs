@@ -167,11 +167,16 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-
+    private bool IsDeflecting()
+    {
+        // Replace with your deflect/blocking logic, e.g., check if the player is attacking
+        return Input.GetKey(KeyCode.Space); // Example: Deflect when holding Space
+    }
 
     public void TakeDamage(int damage)
     {
         currentHealth -= damage;
+        Debug.Log($"Player took {damage} damage! Current health: {currentHealth}");
         healthBar.SetHealth(currentHealth); // Update health bar
         if (currentHealth <= 0)
         {
